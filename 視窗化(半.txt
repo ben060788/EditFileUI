@@ -1,0 +1,185 @@
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import javax.swing.*;
+
+public class JNotePadUI extends JFrame {
+	private JLabel stateBar;
+	private JTextArea textArea;
+	
+	
+	JMenuBar menuBar;
+	JMenu fileMenu;
+	JMenuItem menuOpen;
+	JMenuItem menuSave;
+	JMenuItem menuSaveAs;
+	JMenuItem menuClose;
+	
+	private JMenu editMenu;
+	JMenuItem menuCut;
+	JMenuItem menuCopy;
+	JMenuItem menuPaste;
+	
+	JMenu aboutMenu;
+	JMenuItem menuAbout;
+	
+	public JNotePadUI() {
+		super("新增文字檔案");
+		setUpUIComponent();
+		setUpEventListener();
+		setVisible(true);
+	}
+
+	private void setUpEventListener() {
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		menuOpen.addActionListener(
+				new ActionListener(){
+			public void actionPerformed(ActionEvent e){openFile();}} 
+		);
+			textArea.addKeyListener(
+					new KeyAdapter()){
+				public void keyTyped(KeyEvent e){
+					processTextArea();
+			}
+	private void openFile(){
+		if(isCurrentFileSaved()){
+			open();
+		}
+		else{
+			int option=JOptionPane.showConfirmDialog(
+					null, "檔案已修改   是否儲存?",
+					"儲存檔案?",JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE,null);
+			switch(option){
+				case JOptionPane.YES_OPTION:
+					saveFile();
+					break;
+				case JOptionPane.NO_OPTION:
+					open();
+					break;
+			}
+		}
+}
+	private boolean isCurrentFileSaved(){
+		if(stateBar.getText().equals("已修改")){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	private void open(){
+		JFileChooser fileChooser = new JFileChooser();
+		int option = fileChooser.showDialog(null, null);
+		if(option == JFileChooser.APPROVE_OPTION){
+			try {
+				BufferedReader buf =
+						new BufferedReader(
+								new FileReader(
+										fileChooser.getSelectedFile()));
+			stateBar.setText("未修改");
+			String lineSeparator = System.getProperty("line.separator");
+			String text;
+			while((text = buf.readLine())!=null){
+				textArea.append(text);
+				textArea.append(lineSeparator);
+			}
+			buf.close();
+			}
+			catch(IOException e){
+				JOptionPane.showMessageDialog(null, e.toString(),
+					"開啟檔案失敗",JOptionPane.ERROR_MESSAGE);
+			}
+			}
+	}
+	private void saveFileAs(){
+		JFile
+	}
+	
+	
+	
+	
+	
+	
+	
+	private void setUpUIComponent() {
+		setSize(640, 480);
+		
+		menuBar = new JMenuBar();
+		//=====================================
+		fileMenu = new JMenu("檔案");
+		
+		menuOpen = new JMenuItem("開啟舊檔");
+		menuOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		menuSave = new JMenuItem("儲存檔案");
+		menuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		menuSaveAs = new JMenuItem("另存新檔");
+		menuClose = new JMenuItem("關閉檔案");
+		menuClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		
+		fileMenu.add(menuOpen);
+		fileMenu.addSeparator();
+		fileMenu.add(menuSave);
+		fileMenu.add(menuSaveAs);
+		fileMenu.addSeparator();
+		fileMenu.add(menuClose);
+		menuBar.add(fileMenu);
+				
+		//======================================
+		editMenu = new JMenu("編輯");
+		menuCut = new JMenuItem("剪下");
+		menuCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+		menuCopy = new JMenuItem("複製");
+		menuCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+		menuPaste = new JMenuItem("貼上");
+		menuPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+		
+		editMenu.add(menuCut);
+		editMenu.addSeparator();
+		editMenu.add(menuCopy);
+		editMenu.addSeparator();
+		editMenu.add(menuPaste);
+		menuBar.add(editMenu);
+		//======================================
+		aboutMenu = new JMenu("關於");
+		menuAbout = new JMenuItem("關於JNotePad");
+		
+	    aboutMenu.add(menuAbout);
+		menuBar.add(aboutMenu);
+		//======================================
+		
+		setJMenuBar(menuBar);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setFont(new Font("細明體",Font.PLAIN, 16));
+		textArea.setLineWrap(true);
+		JScrollPane panel = new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		Container contentPane = getContentPane();
+		contentPane.add(panel,BorderLayout.CENTER);
+		JLabel stateBar = new JLabel("未修改");
+		stateBar.setHorizontalAlignment(SwingConstants.LEFT);
+		stateBar.setBorder(
+				BorderFactory.createEtchedBorder());
+		contentPane.add(stateBar,BorderLayout.SOUTH);
+
+		
+	}
+		
+		//====================================
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new JNotePadUI();
+	}
+
+}
